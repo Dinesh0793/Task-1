@@ -1,0 +1,52 @@
+import pandas as pd
+input_file = input("Enter the name of filename for input with .csv: ")
+input_data = pd.read_csv(input_file)
+input_data = input_data[input_data["Name"] != "Name"]
+input_data.reset_index(drop=True, inplace=True)
+
+def transform_data(row):
+    name = row["Name"]
+    username = row["id"]
+    chapter_tag = row["Chapter Tag"]
+    data = []
+    for i in range(1, 6):
+        test_name = f"Concept Test {i}"
+        answered = row[f"Concept Test {i} - answered"]
+        correct = row[f"Concept Test {i}- correct"]
+        score = row[f"Concept Test {i} - score"]
+        skipped = row[f"Concept Test {i}- skipped"]
+        time_taken = row[f"Concept Test {i} - time-taken (seconds)"]
+        wrong = row[f"Concept Test {i}- wrong"]
+        data.append([username, name, chapter_tag, test_name, answered, correct, score, skipped, time_taken, wrong]) 
+    for i in range(1, 3):
+        test_name = f"Full Chapter Test {i}"
+        answered = row[f"Full Chapter Test {i} - answered"]
+        correct = row[f"Full Chapter Test {i}- correct"]
+        score = row[f"Full Chapter Test {i} - score"]
+        skipped = row[f"Full Chapter Test {i}- skipped"]
+        time_taken = row[f"Full Chapter Test {i} - time-taken (seconds)"]
+        wrong = row[f"Full Chapter Test {i}- wrong"]
+        data.append([username, name, chapter_tag, test_name, answered, correct, score, skipped, time_taken, wrong]) 
+    for i in range(1, 3):
+        test_name = f"Topic Test {i}"
+        answered = row[f"Topic Test {i} - answered"]
+        correct = row[f"Topic Test {i}- correct"]
+        score = row[f"Topic Test {i} - score"]
+        skipped = row[f"Topic Test {i}- skipped"]
+        time_taken = row[f"Topic Test {i} - time-taken (seconds)"]
+        wrong = row[f"Topic Test {i}- wrong"]
+        data.append([username, name, chapter_tag, test_name, answered, correct, score, skipped, time_taken, wrong]) 
+    return data
+
+transform= []
+for index, row in input_data.iterrows():
+    transform.extend(transform_data(row))
+
+output_df = pd.DataFrame(transform, columns=["Username", "Name", "Chapter Tag", "Test_Name", "answered", "correct", "score", "skipped", "time-taken (seconds)", "wrong"])
+output_df.replace("-", pd.NA, inplace=True)
+final_output = output_df.dropna(subset=["answered", "correct", "score", "skipped", "time-taken (seconds)", "wrong"], how="any")
+
+output_file = input("Enter the output filename with .csv: ")
+
+final_output.to_csv(output_file, index=False)
+print("Data stored to ", output_file)
